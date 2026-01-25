@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>tf_game — teri farti</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #0b0b0b;
+      --text: #eaeaea;
+      --muted: #8a8a8a;
+      --accent: #6ccfff;
+      --accent2: #8b6cff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(circle at top, #0f0f0f 0%, var(--bg) 65%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    canvas#bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+
+    header {
+      padding: 90px 40px 60px;
+      text-align: center;
+      animation: fadeIn 1.2s ease;
+    }
+
+    header h1 {
+      font-size: 3.2rem;
+      letter-spacing: 6px;
+      margin: 0;
+      text-transform: lowercase;
+    }
+
+    header span { color: var(--accent); }
+
+    header p {
+      margin-top: 20px;
+      color: var(--muted);
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .lang {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: .85rem;
+      cursor: pointer;
+      opacity: .7;
+      user-select: none;
+    }
+
+    section {
+      padding: 70px 40px;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2.1rem;
+      margin-bottom: 34px;
+      position: relative;
+    }
+
+    h2::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -12px;
+      width: 70px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 26px;
+    }
+/* ===== ЛОГО: ОСНОВА ===== */
+#logo {
+  position: relative;
+  display: inline-block;
+  font-size: 3.6rem;
+  letter-spacing: 6px;
+  text-transform: lowercase;
+  cursor: default;
+  user-select: none;
+  color: var(--text);
+  transition: transform .2s ease;
+  perspective: 800px;
+}
+
+/* ===== НЕОНОВОЕ СВЕЧЕНИЕ ===== */
+#logo span {
+  color: var(--accent);
+  text-shadow:
+    0 0 12px rgba(108,204,255,0.8),
+    0 0 24px rgba(108,204,255,0.5),
+    0 0 48px rgba(108,204,255,0.3);
+}
+
+/* ===== ПУЛЬСАЦИЯ ===== */
+#logo {
+  animation: logoPulse 4s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% { text-shadow: 0 0 12px rgba(108,204,255,0.4); }
+  50% { text-shadow: 0 0 24px rgba(108,204,255,0.9); }
+}
+
+/* ===== БЛИК ===== */
+.logo-glow {
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 240%;
+  height: 100%;
+  background: linear-gradient(115deg, rgba(255,255,255,0.25), rgba(255,255,255,0));
+  transform: skewX(-20deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#logo:hover .logo-glow {
+  animation: logoShine 1.4s ease;
+}
+
+@keyframes logoShine {
+  0% { left: -120%; opacity: 0; }
+  40% { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
+}
+
+/* ===== ГЛИЧ ===== */
+.logo-glitch {
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#logo:hover .logo-glitch {
+  animation: glitchAnim 0.35s steps(2) 1;
+}
+
+@keyframes glitchAnim {
+  0% { transform: translate(0,0); opacity: 0.4; }
+  20% { transform: translate(-2px,2px); opacity: 0.7; }
+  40% { transform: translate(2px,-2px); opacity: 0.5; }
+  60% { transform: translate(-1px,1px); opacity: 0.7; }
+  80% { transform: translate(1px,-1px); opacity: 0.4; }
+  100% { transform: translate(0,0); opacity: 0; }
+}
+
+/* ===== СКАН-ЛИНИЯ ===== */
+.logo-scan {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  top: -10px;
+  opacity: 0;
+}
+
+#logo:hover .logo-scan {
+  animation: scanMove 1.2s ease;
+}
+
+@keyframes scanMove {
+  0% { top: -10px; opacity: 0; }
+  20% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ===== 3D НАКЛОН ===== */
+#logo:hover {
+  transform: rotateX(8deg) rotateY(-8deg) scale(1.06);
+}
+
+    /* свет внутри карточек */
+    .cardLight {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,204,255,0.4), rgba(0,0,0,0) 70%);
+      mix-blend-mode: screen;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity .18s ease;
+      filter: blur(25px);
+      z-index: 1;
+    }
+
+    /* стеклянный блик */
+    .cardGlare {
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(120deg, rgba(255,255,255,0.35), rgba(255,255,255,0) 60%);
+      mix-blend-mode: screen;
+      opacity: 0;
+      transform: translateX(-40%) rotate(12deg);
+      transition: opacity .2s ease, transform .2s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* карточки */
+    .card {
+      background:
+        radial-gradient(circle at 50% 0%,
+          rgba(108,204,255,0.12),
+          transparent 60%),
+        linear-gradient(180deg, #111, #070707);
+      border: none;
+      padding: 26px;
+      border-radius: 16px;
+      transition:
+        transform .18s ease,
+        box-shadow .45s ease,
+        background .2s ease,
+        max-height .45s ease;
+      position: relative;
+      overflow: hidden;
+      max-height: 160px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      will-change: transform, box-shadow;
+    }
+
+
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(2px);
+  animation: particleFloat linear infinite;
+}
+
+@keyframes particleFloat {
+  0% { transform: translate(0,0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+}
+
+    .card:hover {
+      box-shadow: 0 30px 80px rgba(0,0,0,.75);
+      max-height: 320px;
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .card p {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .35s ease, transform .35s ease;
+      margin-bottom: 8px;
+    }
+
+    .card:hover p {
+      opacity: 1;
+      transform: translateY(0);
+    }
+#logoNoise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.25;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.05) 0px,
+    rgba(255,255,255,0.05) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: noiseShift 0.8s steps(2) infinite;
+}
+
+@keyframes noiseShift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+
+    .tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: .75rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #151515;
+      color: var(--accent);
+    }
+
+    footer {
+      padding: 50px 40px;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid #161616;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="lang" onclick="toggleLang()">RU / EN</div>
+
+<header>
+<h1 id="logo">
+  tf_<span>game</span>
+  <div class="logo-glow"></div>
+  <div class="logo-scan"></div>
+  <div class="logo-glitch"></div>
+</h1>
+
+
+
+  <p data-ru="Независимая компания teri farti. Игры, системы, эксперименты."
+     data-en="Independent studio teri farti. Games, systems, experiments.">
+    Независимая компания <b>teri farti</b>. Игры, системы, эксперименты.
+  </p>
+</header>
+
+<section>
+  <h2 data-ru="Релизнутые проекты" data-en="Released projects">Релизнутые проекты</h2>
+  <div class="grid" id="releasedGrid"></div>
+</section>
+
+<section>
+  <h2 data-ru="В разработке" data-en="In development">В разработке</h2>
+  <div class="grid" id="devGrid"></div>
+</section>
+
+<footer>
+  <p>© teri farti · tf_game</p>
+  <p><a href="https://github.com/teri-farti">GitHub</a></p>
+</footer>
+
+<script>
+  // живой фон
+  const c = document.getElementById('bg');
+  const ctx = c.getContext('2d');
+  let w, h, t = 0;
+
+  function resize(){ w = c.width = innerWidth; h = c.height = innerHeight; }
+  window.addEventListener('resize', resize); resize();
+
+  function loop(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<120;i++){
+      const x = (Math.sin(t*0.0003+i)*.5+.5)*w;
+      const y = (Math.cos(t*0.0004+i)*.5+.5)*h;
+      ctx.fillStyle = 'rgba(120,180,255,.03)';
+      ctx.fillRect(x,y,2,2);
+    }
+    t+=16; requestAnimationFrame(loop);
+  }
+  loop();
+
+  // JSON проектов с RU/EN
+  const projects = {
+    released: [
+      {
+        name: { ru: "Knights Adventure", en: "Knights Adventure" },
+        desc: {
+          ru: "2D RPG: процедурный мир, мультиплеер, сложные системы.",
+          en: "2D RPG: procedural world, multiplayer, complex systems."
+        },
+        tag: "Python / Pygame",
+        url: "https://github.com/teri-farti/Knights-Adventure"
+      },
+      {
+        name: { ru: "Win‑AI", en: "Win‑AI" },
+        desc: {
+          ru: "Минималистичный Windows-клиент для Gemini.",
+          en: "Minimalistic Windows client for Gemini."
+        },
+        tag: "Python / PyQt5",
+        url: "https://github.com/teri-farti/Win-AI"
+      },
+      {
+        name: { ru: "Roclicker", en: "Roclicker" },
+        desc: {
+          ru: "Инкрементальная игра с визуальной деградацией.",
+          en: "Incremental game with visual degradation."
+        },
+        tag: "Godot",
+        url: "https://github.com/teri-farti/Roclicker"
+      },
+      {
+        name: { ru: "Rurails", en: "Rurails" },
+        desc: {
+          ru: "Выживание: ядерная зима, поезд, ресурсы, побег в Африку.",
+          en: "Survival: nuclear winter, train, resources, escape to Africa."
+        },
+        tag: "Roblox",
+        url: "https://www.roblox.com/games/75300993614946/unnamed"
+      }
+    ],
+    development: [
+      {
+        name: { ru: "The Water Tycoon", en: "The Water Tycoon" },
+        desc: {
+          ru: "Тайкон про добычу и очистку воды.",
+          en: "Tycoon about extracting and purifying water."
+        },
+        tag: "Minecraft",
+        url: ""
+      },
+      {
+        name: { ru: "Void Filler", en: "Void Filler" },
+        desc: {
+          ru: "Пустота, бедрок, механизмы, боссы.",
+          en: "Void, bedrock, mechanisms, bosses."
+        },
+        tag: "Minecraft Mod",
+        url: ""
+      },
+      {
+        name: { ru: "Rock 2", en: "Rock 2" },
+        desc: {
+          ru: "AAA‑RPG в Roblox. Максимальная оптимизация.",
+          en: "AAA‑RPG in Roblox. Maximum optimization."
+        },
+        tag: "Roblox",
+        url: ""
+      },
+      {
+        name: { ru: "The Mertvogorodok", en: "The Mertvogorodok" },
+        desc: {
+          ru: "Гиперреалистичное выживание.",
+          en: "Hyper-realistic survival."
+        },
+        tag: "Unreal Engine",
+        url: ""
+      },
+      {
+        name: { ru: "The Random World", en: "The Random World" },
+        desc: {
+          ru: "Генерация вселенных, законов и целей.",
+          en: "Generation of universes, laws and goals."
+        },
+        tag: "Unity",
+        url: ""
+      }
+    ]
+  };
+
+  let currentLang = 'ru';
+
+  function createCard(p){
+    const div = document.createElement('div');
+    div.className = 'card';
+
+    const light = document.createElement('div');
+    light.className = 'cardLight';
+    div.appendChild(light);
+
+    const glare = document.createElement('div');
+    glare.className = 'cardGlare';
+    div.appendChild(glare);
+
+    const title = document.createElement('h3');
+    title.textContent = p.name[currentLang];
+    div.appendChild(title);
+
+    const desc = document.createElement('p');
+    desc.textContent = p.desc[currentLang];
+    div.appendChild(desc);
+
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = p.tag;
+    div.appendChild(tag);
+
+    // клик по карточке
+    div.addEventListener('click', () => {
+      if (p.url) window.open(p.url, '_blank');
+    });
+
+    // 3D‑наклон + блик
+    div.addEventListener('mousemove', e => {
+      const r = div.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+
+      const tiltX = -y * 12;
+      const tiltY = x * 12;
+
+      div.style.transform =
+        `rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-6px)`;
+
+      const glareX = (x + 0.5) * 60 - 30;
+      glare.style.transform =
+        `translateX(${glareX}%) rotate(12deg)`;
+      glare.style.opacity = 0.45;
+    });
+
+    div.addEventListener('mouseleave', () => {
+      div.style.transform = 'translateY(0)';
+      glare.style.opacity = 0;
+    });
+
+    return div;
+  }
+
+  function renderProjects(){
+    const releasedGrid = document.getElementById('releasedGrid');
+    const devGrid = document.getElementById('devGrid');
+    releasedGrid.innerHTML = '';
+    devGrid.innerHTML = '';
+
+    projects.released.forEach(p => releasedGrid.appendChild(createCard(p)));
+    projects.development.forEach(p => devGrid.appendChild(createCard(p)));
+  }
+
+  renderProjects();
+const explosion = document.getElementById("logoExplosion");
+
+// 3D движение логотипа
+const logo = document.getElementById("logo");
+
+document.addEventListener("mousemove", e => {
+  const r = logo.getBoundingClientRect();
+  const x = (e.clientX - (r.left + r.width/2)) / r.width;
+  const y = (e.clientY - (r.top + r.height/2)) / r.height;
+
+  const tiltX = y * -12;
+  const tiltY = x * 12;
+
+  logo.style.transform =
+    `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
+});
+
+logo.addEventListener("mouseleave", () => {
+  logo.style.transform = "rotateX(0deg) rotateY(0deg)";
+});
+
+
+logo.addEventListener("mouseleave", () => {
+  logo.style.transform = "rotateX(0deg) rotateY(0deg)";
+});
+
+  // свет по скорости движения
+  let lastX = null, lastY = null, lastTime = null;
+
+  document.addEventListener("mousemove", e => {
+    const now = performance.now();
+    let speed = 0;
+
+    if (lastX !== null && lastY !== null && lastTime !== null) {
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      const dt = now - lastTime || 1;
+      speed = Math.hypot(dx, dy) / dt; // px/ms
+    }
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastTime = now;
+
+    const normSpeed = Math.min(1, speed * 1.8); // усиление
+
+    document.querySelectorAll(".card").forEach(card => {
+      const r = card.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+
+      const light = card.querySelector(".cardLight");
+      if (!light) return;
+
+      if (dist < 500) {
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+
+        light.style.left = x + "px";
+        light.style.top = y + "px";
+
+        const base = 0.18;
+        const extra = 0.82 * normSpeed;
+        light.style.opacity = base + extra;
+      } else {
+        light.style.opacity = 0;
+      }
+    });
+  });
+
+
+  // язык
+  function toggleLang(){
+    currentLang = currentLang === 'ru' ? 'en' : 'ru';
+
+    document.querySelectorAll('[data-ru]').forEach(e=>{
+      e.textContent = currentLang === 'ru' ? e.dataset.ru : e.dataset.en;
+    });
+
+    renderProjects();
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
