@@ -3,6 +3,7 @@
 The tf_game website is the official project portfolio of the independent studio teri farti.
 
 The platform provides an overview of released products, titles currently in development, and includes a set of interactive interface components such as 3D card transformations, neon‑style visual effects, a dynamic background, and bilingual support (RU/EN).
+
 ---
 
 ## Overview
@@ -10,6 +11,7 @@ The platform provides an overview of released products, titles currently in deve
 The website is designed as a modern single‑page application with a focus on clarity, performance, and visual consistency.
 
 All interface elements are implemented using native web technologies without external frameworks.
+
 ---
 
 ## Key Features
@@ -27,6 +29,7 @@ All interface elements are implemented using native web technologies without ext
 • 	JSON‑based project configuration for simplified maintenance
 
 • 	Fully responsive layout for desktop and mobile devices
+
 ---
 
 ## Technologies Used
@@ -39,6 +42,7 @@ All interface elements are implemented using native web technologies without ext
 • 	Vanilla JavaScript
 
 • 	Canvas API for background rendering
+
 ---
 
 ## Localization
@@ -52,6 +56,7 @@ The language toggle updates:
 • 	project descriptions
 
 • 	interface labels
+
 ---
 
 ## Developer
