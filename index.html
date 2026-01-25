@@ -91,7 +91,7 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 26px;
     }
-/* ===== ЛОГО: ОСНОВА ===== */
+
 #logo {
   position: relative;
   display: inline-block;
@@ -105,7 +105,7 @@
   perspective: 800px;
 }
 
-/* ===== НЕОНОВОЕ СВЕЧЕНИЕ ===== */
+
 #logo span {
   color: var(--accent);
   text-shadow:
@@ -114,7 +114,7 @@
     0 0 48px rgba(108,204,255,0.3);
 }
 
-/* ===== ПУЛЬСАЦИЯ ===== */
+
 #logo {
   animation: logoPulse 4s ease-in-out infinite;
 }
@@ -124,7 +124,7 @@
   50% { text-shadow: 0 0 24px rgba(108,204,255,0.9); }
 }
 
-/* ===== БЛИК ===== */
+
 .logo-glow {
   position: absolute;
   top: 0;
@@ -147,7 +147,7 @@
   100% { left: 120%; opacity: 0; }
 }
 
-/* ===== ГЛИЧ ===== */
+
 .logo-glitch {
   position: absolute;
   inset: 0;
@@ -170,7 +170,7 @@
   100% { transform: translate(0,0); opacity: 0; }
 }
 
-/* ===== СКАН-ЛИНИЯ ===== */
+
 .logo-scan {
   position: absolute;
   left: 0;
@@ -191,12 +191,12 @@
   100% { top: 100%; opacity: 0; }
 }
 
-/* ===== 3D НАКЛОН ===== */
+
 #logo:hover {
   transform: rotateX(8deg) rotateY(-8deg) scale(1.06);
 }
 
-    /* свет внутри карточек */
+
     .cardLight {
       position: absolute;
       width: 340px;
@@ -212,7 +212,7 @@
       z-index: 1;
     }
 
-    /* стеклянный блик */
+
     .cardGlare {
       position: absolute;
       inset: -40%;
@@ -225,7 +225,7 @@
       z-index: 2;
     }
 
-    /* карточки */
+
     .card {
       background:
         radial-gradient(circle at 50% 0%,
@@ -371,7 +371,7 @@
 </footer>
 
 <script>
-  // живой фон
+
   const c = document.getElementById('bg');
   const ctx = c.getContext('2d');
   let w, h, t = 0;
@@ -391,7 +391,6 @@
   }
   loop();
 
-  // JSON проектов с RU/EN
   const projects = {
     released: [
       {
@@ -507,12 +506,10 @@
     tag.textContent = p.tag;
     div.appendChild(tag);
 
-    // клик по карточке
     div.addEventListener('click', () => {
       if (p.url) window.open(p.url, '_blank');
     });
 
-    // 3D‑наклон + блик
     div.addEventListener('mousemove', e => {
       const r = div.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
@@ -551,7 +548,6 @@
   renderProjects();
 const explosion = document.getElementById("logoExplosion");
 
-// 3D движение логотипа
 const logo = document.getElementById("logo");
 
 document.addEventListener("mousemove", e => {
@@ -575,7 +571,6 @@ logo.addEventListener("mouseleave", () => {
   logo.style.transform = "rotateX(0deg) rotateY(0deg)";
 });
 
-  // свет по скорости движения
   let lastX = null, lastY = null, lastTime = null;
 
   document.addEventListener("mousemove", e => {
@@ -593,7 +588,7 @@ logo.addEventListener("mouseleave", () => {
     lastY = e.clientY;
     lastTime = now;
 
-    const normSpeed = Math.min(1, speed * 1.8); // усиление
+    const normSpeed = Math.min(1, speed * 1.8); 
 
     document.querySelectorAll(".card").forEach(card => {
       const r = card.getBoundingClientRect();
@@ -621,7 +616,6 @@ logo.addEventListener("mouseleave", () => {
   });
 
 
-  // язык
   function toggleLang(){
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
 
